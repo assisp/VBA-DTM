@@ -13,7 +13,10 @@ Add files to Acad or Bricscad VBA project
 
 run one of the 4 available macros:
 
-createTIN - For TIN generation
-createCN  - For Contour Lines
-createALIG - For alignement of 2D Polylines
-CreateVERT - For vertical views of 3D Polylines
+TIN - For TIN generation
+
+CN  - For Contour Lines
+
+ALIG - For alignement of 2D Polylines
+
+VERT - For vertical views of 3D Polylines
