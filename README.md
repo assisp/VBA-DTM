@@ -17,6 +17,6 @@ TIN - For TIN generation
 
 CN  - For Contour Lines
 
-ALIG - For alignement of 2D Polylines
+ALIG - For alignment of 2D Polylines
 
 VERT - For vertical views of 3D Polylines
