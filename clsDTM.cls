@@ -1,12 +1,3 @@
-VERSION 1.0 CLASS
-BEGIN
-  MultiUse = -1  'True
-END
-Attribute VB_Name = "clsDTM"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = False
-Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
 Option Explicit
 
 Rem -----------------------------------------------------------------------------------------------------------------------
@@ -323,7 +314,7 @@ Public Function getObjects() As Long
     acSelSet.SelectOnScreen grpCode, dataVal
     
     If acSelSet.Count = 0 Then
-        MsgBox "Não foram selecionados quaisquer objectos para calculo DTM"
+        MsgBox "NÃ£o foram selecionados quaisquer objectos para calculo DTM"
         acSelSet.Delete
         getObjects = 0
         Exit Function
@@ -1955,7 +1946,7 @@ Public Sub createCN(ByVal CNPStep As Double, ByVal CNSStep As Double, Optional B
     If useTINLayer Then
         Set acSelSet = GetEntityTypeInLayer("3DFACE", myTINLayer)
         If acSelSet.Count = 0 Then
-            MsgBox "Não foram selecionados quaisquer objectos 3DFACE"
+            MsgBox "NÃ£o foram selecionados quaisquer objectos 3DFACE"
             acSelSet.Delete
             Exit Sub
         End If
@@ -1968,7 +1959,7 @@ Public Sub createCN(ByVal CNPStep As Double, ByVal CNSStep As Double, Optional B
         acSelSet.SelectOnScreen grpCode, dataVal
         
         If acSelSet.Count = 0 Then
-            MsgBox "Não foram selecionados quaisquer objectos 3DFACE"
+            MsgBox "NÃ£o foram selecionados quaisquer objectos 3DFACE"
             acSelSet.Delete
             Exit Sub
         End If
