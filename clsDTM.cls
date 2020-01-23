@@ -55,7 +55,7 @@ Private Sub Class_Initialize()
     myCNSLayer = "CN-S"
     
     myTextHeight = 1
-    myVTextHeight = 0.5
+    myVTextHeight = 0.4
     
     Set PList = New clsList
     Set CList = New Collection
@@ -1614,12 +1614,14 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     cot_form = "Ref.=" & Format(cot, "#0.00")
         
     'add text for reference (base) line
-    text_pos(0) = Pt(0) - (Len(cot_form) * myVTextHeight) + 1
-    text_pos(1) = Pt(1) - (myVTextHeight * 0.5)
+    text_pos(0) = Pt(0) - myVTextHeight
+    text_pos(1) = Pt(1)
     text_pos(2) = 0
             
     Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, text_pos, myVTextHeight)
     myTextObj.StyleName = "VTextStyle"
+    myTextObj.Alignment = acAlignmentMiddleRight
+    myTextObj.TextAlignmentPoint = text_pos
         
     'Vertical View
     ReDim perfPts(UBound(coord))
@@ -1682,7 +1684,8 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     'measure at interv
     x0 = 0
     For x = Pt(0) To perfPts(UBound(perfPts) - 2) Step interv
-        If x + interv < perfPts(UBound(perfPts) - 2) Then
+        'make sure text for last point doesn't get on top of previous text
+        If x + myVTextHeight < perfPts(UBound(perfPts) - 2) Then
             SPt(0) = x
             SPt(1) = Pt(1)
             SPt(2) = 0
@@ -1697,8 +1700,8 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
             ThisDrawing.ModelSpace.AddLine SPt, EPt
                 
             'height
-            text_pos(0) = x + (myVTextHeight * 0.5)
-            text_pos(1) = Pt(1) - (myTextHeight * 3)
+            text_pos(0) = x
+            text_pos(1) = Pt(1) - (1 + myTextHeight)
                 
             If deform = 1 Then
                 cot_form = Format((EPt(1) - SPt(1)) + cot, "#0.00")
@@ -1709,6 +1712,8 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
             Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, text_pos, myVTextHeight)
             myTextObj.StyleName = "VTextStyle"
             myTextObj.Rotation = PI2  '90 deg = pi/2
+            myTextObj.Alignment = acAlignmentMiddleCenter
+            myTextObj.TextAlignmentPoint = text_pos
                 
             'Parcial x
             text_pos(1) = text_pos(1) - (myTextHeight * 2)
@@ -1724,7 +1729,9 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
             Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, text_pos, myVTextHeight)
             myTextObj.StyleName = "VTextStyle"
             myTextObj.Rotation = PI2  '90 deg = pi/2
-                
+            myTextObj.Alignment = acAlignmentMiddleCenter
+            myTextObj.TextAlignmentPoint = text_pos
+            
             'dist to orig
             text_pos(1) = text_pos(1) - (myTextHeight * 2)
                 
@@ -1732,6 +1739,8 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
             Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, text_pos, myVTextHeight)
             myTextObj.StyleName = "VTextStyle"
             myTextObj.Rotation = PI2  '90 deg = pi/2
+            myTextObj.Alignment = acAlignmentMiddleCenter
+            myTextObj.TextAlignmentPoint = text_pos
         End If
     Next x
         
@@ -1750,8 +1759,8 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     ThisDrawing.ModelSpace.AddLine SPt, EPt
             
     'height
-    text_pos(0) = SPt(0) + (myVTextHeight * 0.5)
-    text_pos(1) = Pt(1) - (myTextHeight * 3)
+    text_pos(0) = SPt(0)
+    text_pos(1) = Pt(1) - (1 + myTextHeight)
             
     If deform = 1 Then
         cot_form = Format((EPt(1) - SPt(1)) + cot, "#0.00")
@@ -1762,6 +1771,8 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, text_pos, myVTextHeight)
     myTextObj.StyleName = "VTextStyle"
     myTextObj.Rotation = PI2 '90 deg = pi/2
+    myTextObj.Alignment = acAlignmentMiddleCenter
+    myTextObj.TextAlignmentPoint = text_pos
             
     'Parcial x
     text_pos(1) = text_pos(1) - (myTextHeight * 2)
@@ -1775,6 +1786,8 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, text_pos, myVTextHeight)
     myTextObj.StyleName = "VTextStyle"
     myTextObj.Rotation = PI2  '90 deg = pi/2
+    myTextObj.Alignment = acAlignmentMiddleCenter
+    myTextObj.TextAlignmentPoint = text_pos
             
     'dist to orig
     text_pos(1) = text_pos(1) - (myTextHeight * 2)
@@ -1783,7 +1796,9 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, text_pos, myVTextHeight)
     myTextObj.StyleName = "VTextStyle"
     myTextObj.Rotation = PI2  '90 deg = pi/2
-                    
+    myTextObj.Alignment = acAlignmentMiddleCenter
+    myTextObj.TextAlignmentPoint = text_pos
+            
     'draw table
     SPt(0) = Pt(0) - 14
     SPt(1) = Pt(1) - 1
