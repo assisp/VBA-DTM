@@ -1590,7 +1590,7 @@ ErrHandler:
 End Sub
 
 Rem ---
-Rem --- get the point coordinates of a 3DPolyline at dist from first vertex
+Rem --- get the point coordinates of a 3DPolyline at horizontal dist from first vertex
 Rem ---
 Private Function getPointAtDist(ByRef ac3DPoly As Acad3DPolyline, ByVal dist As Double) As Variant
     Dim totsize As Double
@@ -1620,9 +1620,7 @@ Private Function getPointAtDist(ByRef ac3DPoly As Acad3DPolyline, ByVal dist As 
         v2(1) = coord(i - 1)
         v2(2) = coord(i)
         
-        a = distance(v1, v2) '2D distance
-        b = v2(2) - v1(2)
-        sz = Sqr((a * a) + (b * b))
+        sz = distance(v1, v2) 'horizontal distance
         
         If totsize + sz > dist Then
             'point is in this segment
@@ -1830,7 +1828,7 @@ Private Sub drawVerticalView(ByRef ac3DPoly As Acad3DPolyline, ByRef Pt As Varia
                 Cp(0) = LPt(0)
                 Cp(1) = LPt(1)
                 Cp(2) = LPt(2)
-                Set acCircle = ThisDrawing.ModelSpace.AddCircle(Cp, myVTextHeight)
+                Set acCircle = ThisDrawing.ModelSpace.AddCircle(Cp, myVTextHeight * 0.3)
                 
                 Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, Cp, myVTextHeight)
                 myTextObj.StyleName = "VTextStyle"
@@ -1913,7 +1911,7 @@ Private Sub drawVerticalView(ByRef ac3DPoly As Acad3DPolyline, ByRef Pt As Varia
         Cp(0) = coord(UBound(coord) - 2)
         Cp(1) = coord(UBound(coord) - 1)
         Cp(2) = coord(UBound(coord))
-        Set acCircle = ThisDrawing.ModelSpace.AddCircle(Cp, myVTextHeight)
+        Set acCircle = ThisDrawing.ModelSpace.AddCircle(Cp, myVTextHeight * 0.3)
                 
         Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, Cp, myVTextHeight)
         myTextObj.StyleName = "VTextStyle"
@@ -2008,6 +2006,36 @@ Private Function GetEntityTypeInLayer(entityType As String, LayerName As String)
     Set acSelSet = CreateSelectionSet("sset", ThisDrawing) 'create a selection set via a proper function
     acSelSet.Select acSelectionSetAll, , , grpCode, dataVal ' fill it with all elements filtered as above: LWPolylines in layer with name passed via "layername" argument
     Set GetEntityTypeInLayer = acSelSet 'acSelSet.Count 'count the numbers of element in the selectionset
+End Function
+
+Rem ---
+Rem --- create a text style
+Rem ---
+Private Function createTextStyle(ByVal name As String, ByVal font As String, ByVal height As Double) As AcadTextStyle
+    Dim Textstyleslist As String
+    Dim styleExists As Boolean
+    Dim TStyle As AcadTextStyle
+    Dim n As Integer
+    
+    styleExists = False
+    
+    For n = 0 To ThisDrawing.TextStyles.Count - 1
+        If StrComp(name, ThisDrawing.TextStyles.Item(n).name, vbTextCompare) = 0 Then
+            styleExists = True
+            Exit For
+        End If
+    Next n
+    
+    If Not styleExists Then
+        Set TStyle = ThisDrawing.TextStyles.Add(name)
+    Else
+        Set TStyle = ThisDrawing.TextStyles.Item(n)
+    End If
+    
+    TStyle.SetFont font, False, False, DEFAULT_CHARSET, DEFAULT_PITCH
+    TStyle.height = height
+    
+    Set createTextStyle = TStyle
 End Function
 
 Rem ---
@@ -2610,13 +2638,9 @@ Public Sub createVERT()
     On Error GoTo ErrHandler
     
     ' Create a new dimension style
-    Set myHTStyle = ThisDrawing.TextStyles.Add("HTextStyle")
-    myHTStyle.SetFont "Tahoma", False, False, DEFAULT_CHARSET, DEFAULT_PITCH
-    myHTStyle.Height = myTextHeight
+    Set myHTStyle = createTextStyle("HTextStyle", "Tahoma", myTextHeight)
     
-    Set myVTStyle = ThisDrawing.TextStyles.Add("VTextStyle")
-    myVTStyle.SetFont "Tahoma", False, True, DEFAULT_CHARSET, DEFAULT_PITCH
-    myVTStyle.Height = myVTextHeight
+    Set myVTStyle = createTextStyle("VTextStyle", "Tahoma", myVTextHeight)
     
     ReDim grpCode(0)
     ReDim dataVal(0)
