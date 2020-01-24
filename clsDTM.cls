@@ -620,7 +620,7 @@ End Function
 Rem ---
 Rem --- checks if point index is in circumcircle of triangle formed by vertices a,b,c
 Rem ---
-Private Function swap(ByVal a As Long, ByVal b As Long, ByVal c As Long, ByVal p As Long) As Boolean
+Private Function swap(ByVal a As Long, ByVal b As Long, ByVal C As Long, ByVal p As Long) As Boolean
     Dim p1 As Variant
     Dim p2 As Variant
     Dim p3 As Variant
@@ -644,7 +644,7 @@ Private Function swap(ByVal a As Long, ByVal b As Long, ByVal c As Long, ByVal p
     
     p1 = PList.Item(a)
     p2 = PList.Item(b)
-    p3 = PList.Item(c)
+    p3 = PList.Item(C)
     
     ax = (p1(0) + p2(0)) * 0.5
     ay = (p1(1) + p2(1)) * 0.5
@@ -729,7 +729,7 @@ Rem --- process ordered point list (OList) so that edge is also edge of a triang
 Rem --- OList (ordered point list - indexes to PList) must not contain edge vertices
 Rem ---
 Private Sub tripol(ByRef NTri As Collection, ByRef OList As Collection, ByRef edge As Variant, ByVal flag As Boolean)
-    Dim c As Long
+    Dim C As Long
     Dim v As Variant
     Dim pe As Collection
     Dim pd As Collection
@@ -747,11 +747,11 @@ Private Sub tripol(ByRef NTri As Collection, ByRef OList As Collection, ByRef ed
         Stop
     End If
     
-    c = OList.Item(1)
+    C = OList.Item(1)
     i = 0
 
     If n > 1 Then
-        If (c = edge(0) Or c = edge(1)) Then
+        If (C = edge(0) Or C = edge(1)) Then
             MsgBox "tripol called with point list with an edge"
             Stop
         End If
@@ -759,30 +759,30 @@ Private Sub tripol(ByRef NTri As Collection, ByRef OList As Collection, ByRef ed
         For Each v In OList
             i = i + 1
             If i > 1 Then
-                If swap(edge(0), edge(1), c, v) Then
-                    c = v
+                If swap(edge(0), edge(1), C, v) Then
+                    C = v
                 End If
             End If
         Next v
             
         'set list of points to the left and to the right of c
-        Set pe = truncBList(OList, c)
-        Set pd = truncAList(OList, c)
+        Set pe = truncBList(OList, C)
+        Set pd = truncAList(OList, C)
             
         'set new edge and process points to the left
         If pe.Count > 0 Then
-            edge1 = Array(edge(0), c)
+            edge1 = Array(edge(0), C)
             tripol NTri, pe, edge1, flag
         End If
             
         'set new edge and process points to the right
         If pd.Count > 0 Then
-            edge1 = Array(c, edge(1))
+            edge1 = Array(C, edge(1))
             tripol NTri, pd, edge1, flag
         End If
     End If
     
-    If (c = edge(0) Or c = edge(1)) Then
+    If (C = edge(0) Or C = edge(1)) Then
         MsgBox "tripol called with point list with an edge"
         Stop
     End If
@@ -792,9 +792,9 @@ Private Sub tripol(ByRef NTri As Collection, ByRef OList As Collection, ByRef ed
     If flag Then
         tri.v1 = edge(0)
         tri.v2 = edge(1)
-        tri.v3 = c
+        tri.v3 = C
     Else
-        tri.v1 = c
+        tri.v1 = C
         tri.v2 = edge(1)
         tri.v3 = edge(0)
     End If
@@ -892,7 +892,7 @@ Rem ---
 Private Function getIntersectPoint(ByRef p1 As Variant, ByRef q1 As Variant, ByRef p2 As Variant, ByRef q2 As Variant) As Variant
     Dim a As Double
     Dim b As Double
-    Dim c As Double
+    Dim C As Double
     Dim d As Double
     Dim aq As Double
     Dim bq As Double
@@ -914,7 +914,7 @@ Private Function getIntersectPoint(ByRef p1 As Variant, ByRef q1 As Variant, ByR
     If aq <> 0 Then
         'y = ax + c
         a = ad / aq
-        c = p1(1) - a * p1(0)
+        C = p1(1) - a * p1(0)
         
         If bq <> 0 Then
             'y = bx + d
@@ -925,8 +925,8 @@ Private Function getIntersectPoint(ByRef p1 As Variant, ByRef q1 As Variant, ByR
                 MsgBox "Lines are paralell"
                 Stop
             Else
-                x = (d - c) / (a - b)
-                y = a * x + c
+                x = (d - C) / (a - b)
+                y = a * x + C
                 
                 z = (((x - p1(0)) * (q1(2) - p1(2))) / aq) + p1(2)
                 
@@ -935,7 +935,7 @@ Private Function getIntersectPoint(ByRef p1 As Variant, ByRef q1 As Variant, ByR
         Else
             'x2 = k (vertical line)
             x = p2(0)
-            y = a * x + c
+            y = a * x + C
             
             z = (((x - p1(0)) * (q1(2) - p1(2))) / aq) + p1(2)
         End If
@@ -1008,20 +1008,20 @@ End Function
 Rem ---
 Rem --- check if segment a,b intersects with segment c,d (return False or True)
 Rem ---
-Private Function doIntersect(ByRef a As Variant, ByRef b As Variant, ByRef c As Variant, ByRef d As Variant, Optional ByVal copl As Boolean = False) As Boolean
+Private Function doIntersect(ByRef a As Variant, ByRef b As Variant, ByRef C As Variant, ByRef d As Variant, Optional ByVal copl As Boolean = False) As Boolean
     Dim o1 As Integer
     Dim o2 As Integer
     Dim ret As Boolean
     
     ret = True
     
-    o1 = orientation(a, c, d)
-    o2 = orientation(b, c, d)
+    o1 = orientation(a, C, d)
+    o2 = orientation(b, C, d)
     
     If o1 = o2 Or o1 = 0 Or o2 = 0 Then
         ret = False
     Else
-        o1 = orientation(a, b, c)
+        o1 = orientation(a, b, C)
         o2 = orientation(a, b, d)
         
         If o1 = o2 Then
@@ -1045,15 +1045,15 @@ Rem ---
 Private Function Intersect(ByRef edge1 As Variant, ByRef edge2 As Variant) As Boolean
     Dim a As Variant
     Dim b As Variant
-    Dim c As Variant
+    Dim C As Variant
     Dim d As Variant
     
     a = PList.Item(edge1(0))
     b = PList.Item(edge1(1))
-    c = PList.Item(edge2(0))
+    C = PList.Item(edge2(0))
     d = PList.Item(edge2(1))
     
-    Intersect = doIntersect(a, b, c, d)
+    Intersect = doIntersect(a, b, C, d)
 
 End Function
 
@@ -1248,7 +1248,7 @@ Private Function setCircumCircle(ByRef tri As clsTriangle) As Boolean
     Dim dy As Double
     Dim vu As Double
     Dim g As Double
-    Dim c(1) As Double
+    Dim C(1) As Double
     Dim cdx As Double
     Dim cdy As Double
     Dim r2 As Double
@@ -1279,21 +1279,21 @@ Private Function setCircumCircle(ByRef tri As clsTriangle) As Boolean
         
     Else
         g = (dx * uy - dy * ux) / vu
-        c(0) = bx + g * vx
-        c(1) = by + g * vy
+        C(0) = bx + g * vx
+        C(1) = by + g * vy
         setCircumCircle = True
     End If
     
-    tri.Cpx = c(0)
-    tri.Cpy = c(1)
+    tri.Cpx = C(0)
+    tri.Cpy = C(1)
     
-    cdx = p1(0) - c(0)
-    cdy = p1(1) - c(1)
+    cdx = p1(0) - C(0)
+    cdy = p1(1) - C(1)
 
     r2 = cdx * cdx + cdy * cdy   'the radius of the circumcircle, squared
     
     tri.r = Sqr(r2)
-    tri.Xmax = c(0) + tri.r
+    tri.Xmax = C(0) + tri.r
     
     Exit Function
 ErrHandler:
@@ -1304,7 +1304,7 @@ End Function
 Rem ---
 Rem --- check if point (p)is inside triangle (a, b, c)
 Rem ---
-Private Function inTriangle(ByRef p As Variant, ByRef a As Variant, ByRef b As Variant, ByRef c As Variant) As Boolean
+Private Function inTriangle(ByRef p As Variant, ByRef a As Variant, ByRef b As Variant, ByRef C As Variant) As Boolean
     Dim ret As Boolean
     Dim ab As Integer
     Dim ac As Integer
@@ -1315,17 +1315,17 @@ Private Function inTriangle(ByRef p As Variant, ByRef a As Variant, ByRef b As V
     ret = False
     
     ab = orientation(p, a, b)
-    ac = orientation(p, a, c)
+    ac = orientation(p, a, C)
     
     If ab = 0 Or ac = 0 Then
         ret = False
     ElseIf ab <> ac Then
-        bc = orientation(p, b, c)
+        bc = orientation(p, b, C)
         If bc = 0 Then
             ret = False
         Else
-            a_bc = orientation(a, b, c)
-            b_ac = orientation(b, a, c)
+            a_bc = orientation(a, b, C)
+            b_ac = orientation(b, a, C)
             If a_bc = bc And b_ac = ac Then
                 ret = True
             End If
@@ -1337,7 +1337,7 @@ End Function
 Rem ---
 Rem --- check z coordinate for (x,y) in triangle (a, b, c) plane
 Rem ---
-Private Function getZ4Plane(ByVal x As Double, ByVal y As Double, ByRef a As Variant, ByRef b As Variant, ByRef c As Variant) As Double
+Private Function getZ4Plane(ByVal x As Double, ByVal y As Double, ByRef a As Variant, ByRef b As Variant, ByRef C As Variant) As Double
     Dim z As Double
     Dim v1(2) As Double
     Dim v2(2) As Double
@@ -1348,9 +1348,9 @@ Private Function getZ4Plane(ByVal x As Double, ByVal y As Double, ByRef a As Var
     v1(1) = a(1) - b(1)
     v1(2) = a(2) - b(2)
     
-    v2(0) = a(0) - c(0)
-    v2(1) = a(1) - c(1)
-    v2(2) = a(2) - c(2)
+    v2(0) = a(0) - C(0)
+    v2(1) = a(1) - C(1)
+    v2(2) = a(2) - C(2)
     
     n(0) = (v1(1) * v2(2)) - (v1(2) * v2(1)) 'r
     n(1) = (v1(2) * v2(0)) - (v1(0) * v2(2)) 's
@@ -1590,13 +1590,76 @@ ErrHandler:
 End Sub
 
 Rem ---
+Rem --- get the point coordinates of a 3DPolyline at dist from first vertex
+Rem ---
+Private Function getPointAtDist(ByRef ac3DPoly As Acad3DPolyline, ByVal dist As Double) As Variant
+    Dim totsize As Double
+    Dim a As Double
+    Dim b As Double
+    Dim sz As Double
+    Dim sdist As Double
+    Dim i As Long
+    Dim v1(2) As Double
+    Dim v2(2) As Double
+    Dim coord As Variant
+    Dim x As Double
+    Dim y As Double
+    Dim z As Double
+    Dim rf As Double
+    
+    coord = ac3DPoly.Coordinates
+    
+    v1(0) = coord(0)
+    v1(1) = coord(1)
+    v1(2) = coord(2)
+    
+    totsize = 0
+    
+    For i = 5 To UBound(coord) Step 3
+        v2(0) = coord(i - 2)
+        v2(1) = coord(i - 1)
+        v2(2) = coord(i)
+        
+        a = distance(v1, v2) '2D distance
+        b = v2(2) - v1(2)
+        sz = Sqr((a * a) + (b * b))
+        
+        If totsize + sz > dist Then
+            'point is in this segment
+            
+            'distance in this segment
+            sdist = dist - totsize
+            
+            'use triangle similarity (AA) to get coordinates
+            rf = sdist / sz
+            x = rf * (v2(0) - v1(0)) + v1(0)
+            y = rf * (v2(1) - v1(1)) + v1(1)
+            z = rf * (v2(2) - v1(2)) + v1(2)
+            Exit For
+        Else
+            totsize = totsize + sz
+        End If
+        
+        v1(0) = v2(0)
+        v1(1) = v2(1)
+        v1(2) = v2(2)
+        
+    Next i
+    
+    getPointAtDist = Array(x, y, z)
+    
+End Function
+
+Rem ---
 Rem --- Draw the vertical view of a 3dPolyline defined by coordinates array = coord
 Rem --- with insertion point Pt and measure points with interv spacing, cot value sets the reference base line value
 Rem ---
-Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal interv As Double, ByVal cot As Double, Optional ByVal deform As Integer = 1)
+Private Sub drawVerticalView(ByRef ac3DPoly As Acad3DPolyline, ByRef Pt As Variant, ByVal interv As Double, ByVal cot As Double, Optional ByVal deform As Integer = 1)
     Dim acBaseLine As AcadPolyline
     Dim acPerfLine As AcadPolyline
     Dim acVLine As AcadLine
+    Dim acCircle As AcadCircle
+    Dim coord As Variant
     Dim v1(2) As Double
     Dim v2(2) As Double
     Dim x As Double
@@ -1610,7 +1673,13 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     Dim myTextObj As AcadText
     Dim i As Integer
     Dim dist As Double
+    Dim LPt As Variant
+    Dim Cp(2) As Double
         
+    On Error GoTo ErrHandler
+    
+    coord = ac3DPoly.Coordinates
+    
     cot_form = "Ref.=" & Format(cot, "#0.00")
         
     'add text for reference (base) line
@@ -1682,10 +1751,14 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     Set acBaseLine = ThisDrawing.ModelSpace.AddPolyline(perfPts)
         
     'measure at interv
+    i = 0
     x0 = 0
     For x = Pt(0) To perfPts(UBound(perfPts) - 2) Step interv
         'make sure text for last point doesn't get on top of previous text
         If x + myVTextHeight < perfPts(UBound(perfPts) - 2) Then
+            
+            i = i + 1
+            
             SPt(0) = x
             SPt(1) = Pt(1)
             SPt(2) = 0
@@ -1741,8 +1814,35 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
             myTextObj.Rotation = PI2  '90 deg = pi/2
             myTextObj.Alignment = acAlignmentMiddleCenter
             myTextObj.TextAlignmentPoint = text_pos
+            
+            'label
+            text_pos(1) = text_pos(1) - (myTextHeight * 2)
+            cot_form = "P" & i
+            Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, text_pos, myVTextHeight)
+            myTextObj.StyleName = "VTextStyle"
+            myTextObj.Rotation = PI2  '90 deg = pi/2
+            myTextObj.Alignment = acAlignmentMiddleCenter
+            myTextObj.TextAlignmentPoint = text_pos
+            
+            If deform = 1 Then
+                'draw label on ac3DPoly
+                LPt = getPointAtDist(ac3DPoly, x - Pt(0))
+                Cp(0) = LPt(0)
+                Cp(1) = LPt(1)
+                Cp(2) = LPt(2)
+                Set acCircle = ThisDrawing.ModelSpace.AddCircle(Cp, myVTextHeight)
+                
+                Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, Cp, myVTextHeight)
+                myTextObj.StyleName = "VTextStyle"
+                myTextObj.Rotation = PI2  '90 deg = pi/2
+                myTextObj.Alignment = acAlignmentMiddleLeft
+                myTextObj.TextAlignmentPoint = Cp
+            End If
+            
         End If
     Next x
+    
+    i = i + 1
         
     'draw last point
     SPt(0) = perfPts(UBound(perfPts) - 2)
@@ -1798,6 +1898,29 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     myTextObj.Rotation = PI2  '90 deg = pi/2
     myTextObj.Alignment = acAlignmentMiddleCenter
     myTextObj.TextAlignmentPoint = text_pos
+    
+    'label
+    text_pos(1) = text_pos(1) - (myTextHeight * 2)
+    cot_form = "P" & i
+    Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, text_pos, myVTextHeight)
+    myTextObj.StyleName = "VTextStyle"
+    myTextObj.Rotation = PI2  '90 deg = pi/2
+    myTextObj.Alignment = acAlignmentMiddleCenter
+    myTextObj.TextAlignmentPoint = text_pos
+            
+    If deform = 1 Then
+        'draw label on ac3DPoly
+        Cp(0) = coord(UBound(coord) - 2)
+        Cp(1) = coord(UBound(coord) - 1)
+        Cp(2) = coord(UBound(coord))
+        Set acCircle = ThisDrawing.ModelSpace.AddCircle(Cp, myVTextHeight)
+                
+        Set myTextObj = ThisDrawing.ModelSpace.AddText(cot_form, Cp, myVTextHeight)
+        myTextObj.StyleName = "VTextStyle"
+        myTextObj.Rotation = PI2  '90 deg = pi/2
+        myTextObj.Alignment = acAlignmentMiddleLeft
+        myTextObj.TextAlignmentPoint = Cp
+    End If
             
     'draw table
     SPt(0) = Pt(0) - 14
@@ -1833,6 +1956,21 @@ Private Sub drawVerticalView(ByRef coord As Variant, ByRef Pt As Variant, ByVal 
     SPt(1) = SPt(1) - (myTextHeight * 2)
     EPt(1) = SPt(1)
     ThisDrawing.ModelSpace.AddLine SPt, EPt
+    
+    text_pos(1) = SPt(1) - (myTextHeight * 1.5)
+            
+    Set myTextObj = ThisDrawing.ModelSpace.AddText("Perfil", text_pos, myTextHeight)
+    myTextObj.StyleName = "HTextStyle"
+        
+    SPt(1) = SPt(1) - (myTextHeight * 2)
+    EPt(1) = SPt(1)
+    ThisDrawing.ModelSpace.AddLine SPt, EPt
+    
+    Exit Sub
+ErrHandler:
+    MsgBox Err.Description
+    Stop
+    Resume
 End Sub
 
 Rem ---
@@ -2511,7 +2649,7 @@ Public Sub createVERT()
         
         Pt = ThisDrawing.Utility.GetPoint(, "Select the insertion point:")
         
-        drawVerticalView ac3DPoly.Coordinates, Pt, interv, cot
+        drawVerticalView ac3DPoly, Pt, interv, cot
         
         kwordList = "Yes No"
         ThisDrawing.Utility.InitializeUserInput 1, kwordList
@@ -2528,7 +2666,7 @@ Public Sub createVERT()
             End If
             
             Pt = ThisDrawing.Utility.GetPoint(, "Select the insertion point:")
-            drawVerticalView ac3DPoly.Coordinates, Pt, interv, cot, 10
+            drawVerticalView ac3DPoly, Pt, interv, cot, 10
         End If
           
     Next ac3DPoly
