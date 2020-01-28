@@ -13,6 +13,9 @@ Option Explicit
 Rem -----------------------------------------------------------------------------------------------------------------------
 Rem --- Internal Variables                                                                           ---
 Rem -----------------------------------------------------------------------------------------------------------------------
+Private Const ERR_COMMAND_CANCELED As Long = -2145386183
+Private Const ERR_EMPTY_VALUE      As Long = -2145320927
+Private Const ERR_EMPTY_POINT      As Long = -2147467259
 
 Private Const PI As Double = 3.14159265358979
 Private Const PI2 As Double = PI * 0.5
@@ -318,19 +321,16 @@ Public Function getObjects() As Long
     
     On Error GoTo ErrHandler
     
-    'ThisDrawing.Utility.Prompt "Selecione os elementos para DTM"
+    ThisDrawing.Utility.Prompt "Select points and break lines(3D Poly) for DTM:"
     Set acSelSet = CreateSelectionSet("SS1")
-
     acSelSet.SelectOnScreen grpCode, dataVal
     
     If acSelSet.Count = 0 Then
-        MsgBox "Não foram selecionados quaisquer objectos para calculo DTM"
+        MsgBox "No objects selected for DTM"
         acSelSet.Delete
         getObjects = 0
         Exit Function
     End If
-    
-    'MsgBox "Selecionados: " & acSelSet.Count & " Objectos "
     
     For Each acObj In acSelSet
         If TypeOf acObj Is AcadPoint Then
@@ -2137,7 +2137,7 @@ Public Sub createCN(ByVal CNPStep As Double, ByVal CNSStep As Double, Optional B
     If useTINLayer Then
         Set acSelSet = GetEntityTypeInLayer("3DFACE", myTINLayer)
         If acSelSet.Count = 0 Then
-            MsgBox "Não foram selecionados quaisquer objectos 3DFACE"
+            MsgBox "No 3DFACE objects selected"
             acSelSet.Delete
             Exit Sub
         End If
@@ -2150,7 +2150,7 @@ Public Sub createCN(ByVal CNPStep As Double, ByVal CNSStep As Double, Optional B
         acSelSet.SelectOnScreen grpCode, dataVal
         
         If acSelSet.Count = 0 Then
-            MsgBox "Não foram selecionados quaisquer objectos 3DFACE"
+            MsgBox "No 3DFACE objects selected"
             acSelSet.Delete
             Exit Sub
         End If
@@ -2411,6 +2411,12 @@ Public Sub createALIG()
     Set acSelSetA = CreateSelectionSet("PolyALIG")
     acSelSetA.SelectOnScreen grpCode, dataVal
     
+    If acSelSetA.Count = 0 Then
+        MsgBox "No Polyline objects selected"
+        acSelSetA.Delete
+        Exit Sub
+    End If
+    
     ReDim grpCode(0)
     ReDim dataVal(0)
     
@@ -2420,6 +2426,12 @@ Public Sub createALIG()
     ThisDrawing.Utility.Prompt "Select 3DFaces for alignment:"
     Set acSelSetB = CreateSelectionSet("FaceALIG")
     acSelSetB.SelectOnScreen grpCode, dataVal
+    
+    If acSelSetA.Count = 0 Then
+        MsgBox "No 3DFace objects selected"
+        acSelSetA.Delete
+        Exit Sub
+    End If
     
     If acSelSetA.Count > 0 Then
         For Each acObj In acSelSetA
@@ -2648,11 +2660,23 @@ Public Sub createVERT()
     grpCode(0) = 0
     dataVal(0) = "POLYLINE"
     
-    ThisDrawing.Utility.Prompt "Select 3DPolylines for vertical view:"
+    ThisDrawing.Utility.Prompt "Select 3D Polylines for vertical view:"
     Set acSelSet = CreateSelectionSet("3DPVERT")
     acSelSet.SelectOnScreen grpCode, dataVal
     
-    interv = ThisDrawing.Utility.GetReal("Select the distance between measure points:")
+    If acSelSet.Count = 0 Then
+        MsgBox "No 3D Polyline objects selected"
+        acSelSet.Delete
+        Exit Sub
+    End If
+    
+    interv = 2
+    interv = ThisDrawing.Utility.GetReal("Select the distance between measure points (" & interv & "):")
+            
+    If interv <= Fuzz Then
+        MsgBox "Distance must be bigger than " & Fuzz
+        Exit Sub
+    End If
     
     For Each ac3DPoly In acSelSet
     
@@ -2690,6 +2714,7 @@ Public Sub createVERT()
             End If
             
             Pt = ThisDrawing.Utility.GetPoint(, "Select the insertion point:")
+            
             drawVerticalView ac3DPoly, Pt, interv, cot, 10
         End If
           
@@ -2699,7 +2724,18 @@ Public Sub createVERT()
     
     Exit Sub
 ErrHandler:
-    MsgBox Err.Description
+    Select Case Err.Number
+        Case ERR_COMMAND_CANCELED
+            acSelSet.Delete
+            Exit Sub
+        Case ERR_EMPTY_POINT
+            acSelSet.Delete
+            Exit Sub
+        Case ERR_EMPTY_VALUE
+            Resume Next
+    End Select
+
+    MsgBox Err.Description & " (" & Err.Number & ")"
     Stop
     Resume
 End Sub
