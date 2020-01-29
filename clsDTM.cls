@@ -13,9 +13,11 @@ Option Explicit
 Rem -----------------------------------------------------------------------------------------------------------------------
 Rem --- Internal Variables                                                                           ---
 Rem -----------------------------------------------------------------------------------------------------------------------
-Private Const ERR_COMMAND_CANCELED As Long = -2145386183
-Private Const ERR_EMPTY_VALUE      As Long = -2145320927
-Private Const ERR_EMPTY_POINT      As Long = -2147467259
+Private Const ERR_EMPTY_VALUE         As Long = -2145320927
+Private Const ERR_EMPTY_VALUE_ZCAD    As Long = -2145320928
+Private Const ERR_COMMAND_CANCELED    As Long = -2145386183
+Private Const ERR_GETVALUE_CANCELED   As Long = -2147352567
+Private Const ERR_EMPTY_POINT         As Long = -2147467259
 
 Private Const PI As Double = 3.14159265358979
 Private Const PI2 As Double = PI * 0.5
@@ -2427,8 +2429,9 @@ Public Sub createALIG()
     Set acSelSetB = CreateSelectionSet("FaceALIG")
     acSelSetB.SelectOnScreen grpCode, dataVal
     
-    If acSelSetA.Count = 0 Then
+    If acSelSetB.Count = 0 Then
         MsgBox "No 3DFace objects selected"
+        acSelSetB.Delete
         acSelSetA.Delete
         Exit Sub
     End If
@@ -2728,10 +2731,15 @@ ErrHandler:
         Case ERR_COMMAND_CANCELED
             acSelSet.Delete
             Exit Sub
+        Case ERR_GETVALUE_CANCELED
+            acSelSet.Delete
+            Exit Sub
         Case ERR_EMPTY_POINT
             acSelSet.Delete
             Exit Sub
         Case ERR_EMPTY_VALUE
+            Resume Next
+        Case ERR_EMPTY_VALUE_ZCAD
             Resume Next
     End Select
 
