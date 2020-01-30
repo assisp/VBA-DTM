@@ -2288,7 +2288,7 @@ Public Sub createCN(ByVal CNPStep As Double, ByVal CNSStep As Double, Optional B
                     Set acPoly = ThisDrawing.ModelSpace.AddPolyline(points)
                     acPoly.Elevation = Zi
                     
-                    md = Int(Zi / CNPStep)
+                    md = Int((Zi / CNPStep) + Fuzz)
                     If (Zi / CNPStep) > md + Fuzz Then
                         acPoly.Layer = myCNSLayer
                     Else
