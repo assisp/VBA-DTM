@@ -3,8 +3,11 @@
 Acad VBA for DTM
 
 Generate TIN with Delauney constraint triangulation of points in Autocad
+
 Generate Contour Lines from TIN
+
 Align 2d Polylines to TIN surface (generate 3D Polyline)
+
 Create Vertical Views of 3D Polylines
 
 Installation:
